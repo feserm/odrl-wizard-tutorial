@@ -1,0 +1,42 @@
+---
+type: lesson
+title: Explanation configuration
+focus: /config/explanations.config.js
+---
+
+# Explanation configuration
+
+Altough we can add a label to each input field. The use of this field might not be as clear to the user, as it is to the person configuring the ODRL Builder. To provide a better understanding of the fields, we can add explanations to each field. These explanations are shown in the explanation box when the user focusses the field, displaying a detailed description as well as an example value.
+
+The explanations are configured in the `explanations.config.js` file. This file is located in the `config` folder of the ODRL Builder. The explanations are provided as an array. Each element in the array is found through its `id` field. 
+
+```js add={2-9}
+window.explanations = [
+	{
+		id: 'DM-1',
+		odrlTerm: 'Policy Identifier',
+		definition: 'The policy identifier is a unique identifier for the policy.',
+		example: 'http://example.com/policy:0815',
+		format: 'url',
+		cardinality: '1'
+	},
+];
+```
+
+If you now focus the Identifier input field, you will see the explanation box appear with the provided information. This is because in our steps configuration, we have linked the explanation to the Identifier field.
+
+```js {10}
+{
+	title: 'Provide basic information about the data usage agreement',
+	fields: [
+		{
+			label: 'Identifier',
+			type: 'text',
+			odrlMapping: {
+				jsonPath: 'uid'
+			},
+			explanation: 'DM-1'
+		}
+	]
+}
+```

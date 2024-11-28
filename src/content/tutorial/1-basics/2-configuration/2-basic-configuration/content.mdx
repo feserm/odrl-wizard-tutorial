@@ -1,0 +1,106 @@
+---
+type: lesson
+title: Basic configuration
+focus: /config/basic.config.js
+---
+
+# Basic configuration
+
+The basic configuration file controls the configuration of the user interface (UI) as well as the prefills. 
+
+The UI configuration allows for three customizations:
+
+- `layoutMode`: `standalone` or `plugin`
+- `initialView`: `init`, `questionnaire`, `form` or `gui`
+- `showProgressBar`: `true` or `false`
+
+In our first setup, we want to deploy the ODRL Builder as a standalone application that allows the user to choose their starting point. To indicate the user where they are in the questionnaire, we will also enable the progress bar. 
+
+Add this snippet to the `basic.config.js` file:
+```js add={2-6}
+window.config = {
+    general: {
+        layoutMode: 'standalone',
+        initialView: 'init',
+        showProgressBar: true
+    }
+}
+```
+
+Well done! Now that the UI is configured you can try the ODRL Builder by clicking the "Start Questionnaire Mode" button. 
+
+Using the questionnaire, we can write an ODRL policy. However, you might notice, that the `"@context"` and `"@type"` fields are not filled. To solve this, we will extend our configuration. 
+
+Add the following snippet to the `basic.configuration.js` file: 
+```js add={7-24}
+window.config = {
+    general: {
+        layoutMode: 'standalone',
+        initialView: 'init',
+        showProgressBar: true
+    },
+    prefill: [
+		{
+			type: 'value',
+			odrlMapping: {
+				entity: 'policy',
+				attribute: '@context'
+			},
+			value: 'https://www.w3.org/ns/odrl.jsonld'
+		},
+		{
+			type: 'value',
+			odrlMapping: {
+				entity: 'policy',
+				attribute: '@type'
+			},
+			value: 'Set'
+		}
+	],
+}
+```
+
+Let's take a closer look at the configuration. 
+
+```js
+{
+    type: 'value',
+    odrlMapping: {
+        entity: 'policy',
+        attribute: '@context'
+    },
+    value: 'https://www.w3.org/ns/odrl.jsonld'
+}
+```
+
+We define that our prefill is a value that needs to be mapped to the `@context` attribute of the `policy` entity. The value is set to `https://www.w3.org/ns/odrl.jsonld`. 
+
+The last part of the basic configuration is the checklist. We would use this object to define checklists for controlled vocabularies. As this is currently not implemented we will leave this part empty.
+```js add={25}
+    window.config = {
+    general: {
+        layoutMode: 'standalone',
+        initialView: 'init',
+        showProgressBar: true
+    },
+    prefill: [
+		{
+			type: 'value',
+			odrlMapping: {
+				entity: 'policy',
+				attribute: '@context'
+			},
+			value: 'https://www.w3.org/ns/odrl.jsonld'
+		},
+		{
+			type: 'value',
+			odrlMapping: {
+				entity: 'policy',
+				attribute: '@type'
+			},
+			value: 'Set'
+		}
+	],
+    checklist: {}
+}
+```

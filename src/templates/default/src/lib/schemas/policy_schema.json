@@ -1,0 +1,30 @@
+{
+	"$schema": "http://json-schema.org/draft-07/schema#",
+	"title": "ODRL Policy",
+	"type": "object",
+	"properties": {
+		"@context": { "type": "string" },
+		"@type": { "type": "string" },
+		"uid": { "type": "string" },
+		"permission": {
+			"type": "array",
+			"items": {
+				"$ref": "rule_schema.json#"
+			}
+		},
+		"prohibition": {
+			"type": "array",
+			"items": {
+				"$ref": "rule_schema.json#"
+			}
+		},
+		"duty": {
+			"type": "array",
+			"items": {
+				"$ref": "rule_schema.json#"
+			}
+		}
+	},
+	"required": ["@context", "@type", "uid"],
+	"additionalProperties": false
+}

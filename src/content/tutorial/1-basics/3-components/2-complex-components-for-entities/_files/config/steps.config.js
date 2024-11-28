@@ -1,0 +1,27 @@
+window.steps = [
+	{
+		title: 'Add permissions to your policy',
+		component: 'Rules',
+		jsonPath: 'permission',
+		componentConfig: {
+			label: 'Permission',
+			explanation: 'DM-3'
+		}
+	},
+	{
+		title: 'Add prohibitions to your policy',
+		component: 'Rules',
+		jsonPath: 'prohibition',
+		componentConfig: {
+			label: 'Prohibition'
+		}
+	},
+	{
+		title: 'Add duties to your policy',
+		component: 'Rules',
+		jsonPath: 'duty',
+		componentConfig: {
+			label: 'Duty'
+		}
+	}
+];

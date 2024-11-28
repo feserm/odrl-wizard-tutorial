@@ -1,0 +1,109 @@
+---
+type: lesson
+title: Introduction to Components
+focus: /src/components/odrl/generic/String.svelte
+---
+
+# Introduction to Components
+
+The ODRL Builder is build from a collection of components. There exist two types of components: generic and entity-specific components. 
+You can find them in the source code under `src/components/odrl/generic` and `src/components/odrl/entity`, respectively.
+
+Preselected is the `String` component. It is a generic component that can be used to display a string value. You can see this component in action in the second step of the questionnaire. 
+Where it is used to input the identifier of the ODRL policy.
+
+
+## Generic Components
+
+Let's take a closer look into the `String` component. First, you will see that it exports a bunch of variables. These variables are used to define the component from outside. 
+For example, we can give the component a label. Other variables are used to store the value of the input field, if the input field is focused, or if the label should be displayed.
+
+```js	
+export let label = '';
+export let odrlLevel = null;
+export let attr;
+export let value;
+export let showLabel = true;
+export let focus = false;
+```
+
+It is important to always bind the value of the input field to the `value` variable. This is, because this variable is taken by the parent component to sync it with the ODRL policy. 
+The application takes care of the double binding, propagating changes to the input field as well as to the stored policy.
+
+In the HTML section (below the `</script>`) of the component, add the following. This component contains a label and an input field.
+```html add={1-18}
+<section style="">
+	<div class="">
+		{#if showLabel}
+			<!-- svelte-ignore a11y-label-has-associated-control -->
+			<label class="label font-semibold text-sm underline">{label}</label>
+		{/if}
+		<input
+			class="w-full input input-sm input-bordered"
+			use:explanationAction
+			use:setFocus
+			data-odrlLevel={odrlLevel}
+			data-attr={attr}
+			type="text"
+			bind:value
+			on:change
+		/>
+	</div>
+</section>
+```
+
+Let's take a look at each part by its own.
+
+### Label
+
+```html
+{#if showLabel}
+    <!-- svelte-ignore a11y-label-has-associated-control -->
+    <label class="label font-semibold text-sm underline">{label}</label>
+{/if}
+```
+
+You might notice the `#if` statement. This is special Svelte syntax to render the item only if the condition is true. 
+In this case, the label is only rendered if the `showLabel` variable is set to `true`.
+
+### Input Field
+
+```html
+<input
+    class="w-full input input-sm input-bordered"
+    use:explanationAction
+    use:setFocus
+    data-odrlLevel={odrlLevel}
+    data-attr={attr}
+    type="text"
+    bind:value
+    on:change
+/>
+```
+
+The input field is a standard HTML input field. The `bind:value` attribute is used to bind the value of the input field to the `value` variable. 
+To display the explannations when the input field is focused, we use the `use:explanationAction` directive. To set the focus on the input field in the first place, we use the `use:setFocus` directive.
+The `explanationAction` is a function that we can generate using the `explanationActionFactory`. This function provides the logic to display the explanations.
+The `setFocus` checks if the ODRL Builder is in questionnaire mode and if the component is focused. If so, it sets the focus on the input field, providing the `data-odrlLevel` and `data-attr` attributes to the explanation display logic.
+
+```js
+import { explanationActionFactory } from '@/lib/actions/explanation';
+let explanationAction = explanationActionFactory(odrlLevel);
+
+function setFocus(el) {
+    if ($appstate == appstate.QUESTIONNAIRE && focus) {
+        el.focus();
+    }
+}
+```
+
+To make the component usable in the questionnaire, we would need to add the component to the generic questionnaire component. Navigate in the files tree to `src/components/questionnaire/GenericQuestionnaire.svelte`.
+In the generic questionnaire we the variable `fieldTypes`. This links the component to a keyword that can be used in the questionnaire configuration.
+
+```js
+const fieldTypes = {
+    text: String,
+    textarea: Textarea,
+    date: Date
+};
+```

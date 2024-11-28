@@ -1,0 +1,120 @@
+---
+type: lesson
+title: Complex Components for Entities
+focus: /src/components/odrl/entity/Rules.svelte
+---
+
+# Complex Components for Entities
+
+In the last lesson, we create a complex component for the permissions, prohibitions and obligations. Those entities are all subclasses of the rule entity.
+Therefore, we can create one component and reuse it for all the subclasses. 
+
+In focus you find the `Rules` component where we will implement the main logic. This component can be mapped onto the correct property within the ODRL. 
+
+## Design of the UI part
+
+The rules are stored in a list. To show the user an overview of what rules are already defined, we want to show this list in some way.
+We therefore iterate over the list and display a Rule component that needs to be completed in the next steps.
+
+Replace the third `TODO` with the following snippet:
+
+```html add={1-8}
+<section class="space-y-2">
+	<div class="space-y-1">
+		{#each rules as rule, index}
+			<Rule on:change on:removeRule={onRemoveRule} bind:rule {componentConfig} {index} />
+		{/each}
+	</div>
+	<button class="btn btn-sm btn-secondary" on:click={addRule}>Add {label}</button>
+</section>
+```
+
+A new button appears on the UI. However, pressing the button does not do anything yet. In the snippet above you see the button's definition and that it calls a function `addRule`. 
+To add rules we need to generate a template from the JSON schema and add it to the list of rules.
+
+**Note**: It is important to use the spread operator to add a new object to the array. Otherwise, Svelte will not recognize the change and will not update the UI.
+
+```js add={2-3}
+function addRule() {
+    let emptyRule = Schemas.getObjectFromSchema('rule');
+    rules = [...rules, emptyRule];
+}
+```
+
+Clicking the button now adds a new rule to the list. (Notice the changes in the ODRL preview on the right side). However, we still need to implement the `Rule` component to
+actually see the rule in the UI.
+
+Go to the `Rule.svelte` component and replace the second `TODO` with the following snippet:
+
+```html add={1-36}
+<section class="border border-neutral-100 bg-base-200 p-2 rounded-md">
+	<div class="">
+		<table>
+			<tbody>
+				<tr>
+					<td>Assignee</td>
+					<td>
+						<input class="input input-bordered input-sm w-96" bind:value={rule.assignee.uid} />
+					</td>
+				</tr>
+				<tr>
+					<td>Assigner</td>
+					<td>
+						<input class="input input-bordered input-sm w-96" bind:value={rule.assigner.uid} />
+					</td>
+				</tr>
+				<tr>
+					<td>Asset</td>
+					<td>
+						<input class="input input-bordered input-sm w-96" bind:value={rule.target.uid} />
+					</td>
+				</tr>
+				<tr>
+					<td>Action</td>
+					<td>
+						<input class="input input-bordered input-sm w-96" bind:value={rule.action} />
+					</td>
+				</tr>
+			</tbody>
+		</table>
+
+		<div class="flow-root h-10 pt-2">
+			<button class="btn btn-sm btn-secondary" on:click={removeRule}>Remove {label}</button>
+		</div>
+	</div>
+</section>
+```
+
+Pressing the `Add Permission` button now, also updates the UI. However, we still can't remove rules, if we decide that we don't need them anymore. 
+For this every rule has a `remove {label}` button. But we can't remove the rule inside the Rule component. We need a mechanism to notify the parent component that we want to remove a particular rule from its rule list.
+To achieve this, we emit an event telling the parent component to remove the rule.
+
+```js add={2-3}
+function removeRule() {
+    rule = {};
+    dispatch('removeRule', { index });
+}
+```
+
+Take now a look at the `Rules.svelte` component again where we used the `Rule` component. 
+```html
+<Rule on:change on:removeRule={onRemoveRule} bind:rule {componentConfig} {index} />
+```
+
+We listen to the `removeRule` event and call the `onRemoveRule` function. This function removes the rule from the list of rules.
+
+```js add={2-3}
+function onRemoveRule(event) {
+    rules.splice(event.detail.index, 1);
+    rules = [...rules];
+}
+```
+
+That's it. We implemented the rules component and can now add and remove rules from the ODRL.
+This also is the last step of this tutorial. You can now
+- Navigate the UI
+- Configure the ODRL Builder
+- Implement generic components
+- Implement complex components 
+
+Congratulations! 
